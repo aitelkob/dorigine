@@ -3,24 +3,28 @@ import numpy as np
 import xml.etree.cElementTree as et
 import json 
 
-tree=et.parse('test.xml')
-dorigine = {}
-root=tree.getroot()
-i = 0
-for childs in root.iter('item'):
-    #print(child[6].tag,child[6].text)
-    #print(child[8].tag,child[8].text)
-    key = "item" + str(i)
-    dorigine[key]= {}
-    for child in childs:
-        if child.tag == 'price':
-            dorigine[key][child.tag] = child.text
-        if child.tag == 'mpn':
-            dorigine[key]['OAM'] = child.text
-        if child.tag == 'product_type':
-            dorigine[key][child.tag] = child.text
-    i= i + 1
-json_object = json.dumps(dorigine,indent = 4)
+def filexml_to_dict(file):
+    tree=et.parse(file)
+    dorigine = {}
+    root=tree.getroot()
+    i = 0
+    for childs in root.iter('item'):
+        for child in childs:
+            if child.tag == 'price':
+                price = child.text
+            if child.tag == 'mpn':
+                key = child.text
+                dorigine[key]= {}
+                dorigine[key] = price
+        i = i + 1
+    return dorigine
 
-with open("sample.json", "w") as outfile:
+dorigine = {}
+dorigine.update(filexml_to_dict('test1.xml'))
+dorigine.update(filexml_to_dict('test2.xml'))
+dorigine.update(filexml_to_dict('test3.xml'))
+dorigine.update(filexml_to_dict('test4.xml'))
+dorigine.update(filexml_to_dict('test5.xml'))
+
+with open("sample12.json", "w") as outfile:
     json.dump(dorigine, outfile, indent = 4)
